@@ -11,7 +11,7 @@ MAX_SPEED = 100.0
 def _run_nbfc_set(args: list[str]) -> None:
     try:
         result = subprocess.run(
-            ["sudo", "nbfc", "set", *args],
+            ["pkexec", "nbfc", "set", *args],
             capture_output=True,
             text=True,
             timeout=5,
