@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 
 from PyQt6.QtCore import QEasingCurve, QPropertyAnimation, Qt, QTimer
+from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import (
     QApplication,
     QGroupBox,
@@ -268,6 +269,15 @@ class MainWindow(QMainWindow):
 
         self.refresh_status()
 
+        self.tray_icon = None
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        if self.tray_icon is not None and self.tray_icon.isVisible():
+            event.ignore()
+            self.hide()
+        else:
+            event.accept()
+
     def _init_fan_widgets(self) -> None:
         try:
             statuses = get_fan_statuses()
@@ -289,19 +299,33 @@ class MainWindow(QMainWindow):
         for widget, status in zip(self.fan_widgets, statuses):
             widget.update_status(status)
 
-    def _on_all_fans_auto(self) -> None:
+    def set_all_fans_mode(self, mode: str) -> None:
         for widget in self.fan_widgets:
-            target = widget._last_auto_target if widget._last_auto_target is not None else widget.slider.value()
-            widget.set_mode("auto", animate_to=target)
+            if mode == "auto":
+                target = widget._last_auto_target if widget._last_auto_target is not None else widget.slider.value()
+                widget.set_mode("auto", animate_to=target)
+            elif mode == "max":
+                widget.set_mode("max", animate_to=100)
+
+    def _on_all_fans_auto(self) -> None:
+        self.set_all_fans_mode("auto")
 
     def _on_all_fans_max(self) -> None:
-        for widget in self.fan_widgets:
-            widget.set_mode("max", animate_to=100)
+        self.set_all_fans_mode("max")
 
 
 def main() -> None:
     app = QApplication(sys.argv)
+    app.setQuitOnLastWindowClosed(False)
+
     window = MainWindow()
+
+    from src.gui.tray import TrayIcon
+
+    tray_icon = TrayIcon(window)
+    tray_icon.show()
+    window.tray_icon = tray_icon
+
     window.show()
     sys.exit(app.exec())
 
