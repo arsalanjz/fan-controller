@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 
 from PyQt6.QtCore import QEasingCurve, QPropertyAnimation, Qt, QTimer
-from PyQt6.QtGui import QCloseEvent
+from PyQt6.QtGui import QCloseEvent, QIcon
 from PyQt6.QtWidgets import (
     QApplication,
     QGroupBox,
@@ -17,6 +17,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
+from src.core.assets import get_icon_path, get_tray_icon_path
 from src.core.fan import (
     set_all_fans_auto,
     set_all_fans_max,
@@ -248,6 +249,7 @@ class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
         self.setWindowTitle("Fan Controller")
+        self.setWindowIcon(QIcon(get_icon_path(128)))
         self.resize(700, 650)
 
         central_widget = QWidget()
@@ -317,12 +319,13 @@ class MainWindow(QMainWindow):
 def main() -> None:
     app = QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
+    app.setDesktopFileName("fan-controller")
 
     window = MainWindow()
 
     from src.gui.tray import TrayIcon
 
-    tray_icon = TrayIcon(window)
+    tray_icon = TrayIcon(window, icon_path=get_tray_icon_path())
     tray_icon.show()
     window.tray_icon = tray_icon
 

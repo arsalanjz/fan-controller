@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Fan Controller
+Comment=Monitor and control CPU/GPU fan speed
+Exec=/home/arsalan/Project/Python/fan-controller/.venv/bin/python /home/arsalan/Project/Python/fan-controller/main.py
+Icon=/home/arsalan/Project/Python/fan-controller/assets/icons/fan-controller-icon-128x128.svg
+Terminal=false
+Categories=Utility;
+StartupWMClass=fan-controller
